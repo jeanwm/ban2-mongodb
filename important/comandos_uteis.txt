@@ -1,0 +1,4 @@
+Para rodar (via terminal):
+
+javac -cp ".;lib/*" NomeArquivo.java // para compilar arquivos
+java -cp ".;lib/*" AcademiaApp       // para rodar o projeto

@@ -1,0 +1,15 @@
+Testado rodando em Terminal Ubuntu (WSL2).
+
+PARA RODAR: 
+1. Crie o banco de dados e tabelas PostgreSQL (criar_bd_postgresql);
+2. Rode os inserts (dump.txt) (opcional);
+3. Execute o comando: ```javac .\AcademiaApp.java```;
+4. Execute o comando (WINDOWS): 
+   ```java -cp ".;lib/mysql-connector-j-9.4.0.jar" AcademiaApp``` // se rodando banco MySQL
+   OU
+   ```java -cp ".;lib/postgresql-42.7.4.jar" AcademiaApp``` // se rodando banco PostgreSQL
+ou
+4. Execute o comando (UBUNTU): 
+   ```java -cp .:lib/mysql-connector-j-9.4.0.jar AcademiaApp``` // se rodando banco MySQL
+   OU
+   ```java -cp .:lib/postgresql-42.7.4.jar AcademiaApp``` // se rodando banco PostgreSQL

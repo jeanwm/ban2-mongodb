@@ -1,0 +1,88 @@
+// Definir ObjectIds previsíveis para facilitar as referências
+var beneficioId = ObjectId("65f1a9b1c9b1a71e1c1a1b1a");
+var planoId = ObjectId("65f1a9b1c9b1a71e1c1a1b1b");
+var telefoneId1 = ObjectId("65f1a9b1c9b1a71e1c1a1b1c");
+var telefoneId2 = ObjectId("65f1a9b1c9b1a71e1c1a1b1d");
+var cargoId = ObjectId("65f1a9b1c9b1a71e1c1a1b1e");
+var clienteId = ObjectId("65f1a9b1c9b1a71e1c1a1b1f");
+var funcionarioId = ObjectId("65f1a9b1c9b1a71e1c1a1b2a");
+var equipamentoId = ObjectId("65f1a9b1c9b1a71e1c1a1b2b");
+var manutencaoId = ObjectId("65f1a9b1c9b1a71e1c1a1b2c");
+
+// Benefícios
+db.beneficios.insertOne({
+  _id: beneficioId,
+  nome: "Beneficio 1",
+  descricao: "Descricao benefício 1"
+});
+
+// Planos
+db.planos.insertOne({
+  _id: planoId,
+  nome: "Plano 1",
+  descricao: "Descricao plano 1",
+  valor: 99.90,
+  duracao: 12,
+  fidelidade: 6,
+  beneficios: [beneficioId]
+});
+
+// Telefones
+db.telefones.insertMany([
+  {
+    _id: telefoneId1,
+    numero: "47999999999"
+  },
+  {
+    _id: telefoneId2,
+    numero: "47999998888"
+  }
+]);
+
+// Cargos
+db.cargos.insertOne({
+  _id: cargoId,
+  nome: "CEO",
+  descricao: "CEO da academia",
+  salario: 8000.00
+});
+
+// Clientes
+db.clientes.insertOne({
+  _id: clienteId,
+  nome: "Cliente Um",
+  data_nascimento: ISODate("2001-01-01"),
+  data_adesao: ISODate("2025-09-20"),
+  status: 1,
+  id_telefone: telefoneId1,
+  id_plano: planoId
+});
+
+// Funcionários
+db.funcionarios.insertOne({
+  _id: funcionarioId,
+  nome: "Funcionario 1",
+  data_nascimento: ISODate("2000-01-02"),
+  data_admissao: ISODate("2015-01-01"),
+  status: 1,
+  id_telefone: telefoneId2,
+  id_cargo: cargoId
+});
+
+// Equipamentos
+db.equipamentos.insertOne({
+  _id: equipamentoId,
+  modelo: "Esteira",
+  valor: 700.00,
+  status: 1
+});
+
+// Manutenções
+db.manutencoes.insertOne({
+  _id: manutencaoId,
+  custo: 200.00,
+  status: 0,
+  data_prevista: ISODate("2025-10-02"),
+  id_equipamento: equipamentoId,
+  id_funcionario: funcionarioId
+});
