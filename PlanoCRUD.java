@@ -107,7 +107,7 @@ public class PlanoCRUD {
                 .append("valor", valor)
                 .append("duracao", duracao)
                 .append("fidelidade", fidelidade)
-                .append("beneficios", new ArrayList<String>()); // Agora armazena nomes dos benefícios
+                .append("beneficios", new ArrayList<ObjectId>());
 
         planos.insertOne(doc);
         System.out.println("Plano cadastrado com sucesso!");
@@ -120,11 +120,26 @@ public class PlanoCRUD {
             return;
         }
 
+        AggregateIterable<Document> result = planos.aggregate(List.of(
+            new Document("$lookup", new Document()
+                .append("from", "beneficios")
+                .append("localField", "beneficios")
+                .append("foreignField", "_id")
+                .append("as", "beneficios_info")),
+            new Document("$project", new Document()
+                .append("nome", 1)
+                .append("descricao", 1)
+                .append("valor", 1)
+                .append("duracao", 1)
+                .append("fidelidade", 1)
+                .append("beneficios", "$beneficios_info.nome"))
+        ));
+
         System.out.println("\n--- PLANOS CADASTRADOS ---");
-        for (Document doc : planos.find()) {
-            List<String> beneficiosList = doc.getList("beneficios", String.class);
-            String beneficiosStr = beneficiosList != null && !beneficiosList.isEmpty() 
-                ? String.join(", ", beneficiosList)
+        for (Document doc : result) {
+            List<String> beneficiosNomes = doc.getList("beneficios", String.class);
+            String beneficiosStr = beneficiosNomes != null && !beneficiosNomes.isEmpty() 
+                ? String.join(", ", beneficiosNomes)
                 : "Nenhum benefício vinculado";
                 
             System.out.printf(
@@ -281,7 +296,7 @@ public class PlanoCRUD {
 
         planos.updateOne(
             Filters.eq("_id", plano.getObjectId("_id")),
-            Updates.push("beneficios", nomeBeneficio)
+            Updates.push("beneficios", beneficio.getObjectId("_id"))
         );
 
         System.out.println("Benefício '" + nomeBeneficio + "' vinculado com sucesso ao plano '" + plano.getString("nome") + "'!");

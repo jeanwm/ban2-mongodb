@@ -110,7 +110,7 @@ public class CargoCRUD {
                 ObjectId id = doc.getObjectId("_id");
                 String nome = doc.getString("nome");
                 String descricao = doc.getString("descricao");
-                double salario = doc.getDouble("salario"); // Usar getDouble em vez de get
+                double salario = doc.getDouble("salario");
                 
                 System.out.printf("ID: %s | Nome: %s | Descrição: %s | Salário: R$ %.2f\n",
                     id.toString(), nome, descricao, salario);
