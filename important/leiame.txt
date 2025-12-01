@@ -6,3 +6,6 @@ PARA RODAR:
 3. Crie um novo banco de dados chamado "academia_bd" e de collection name "academia_bd";
 4. Execute o comando: 
    ```java -cp ".;lib/*" AcademiaApp``` // se os arquivos .class já foram compilados. Senão, referencie o arquivo comandos_uteis.txt
+
+Link do vídeo do funcionamento do sistema no YouTube:
+https://youtu.be/IJKB7BXAOfg
