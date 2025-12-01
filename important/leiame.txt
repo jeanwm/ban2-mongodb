@@ -1,15 +1,8 @@
 Testado rodando em Terminal Ubuntu (WSL2).
 
 PARA RODAR: 
-1. Crie o banco de dados e tabelas PostgreSQL (criar_bd_postgresql);
-2. Rode os inserts (dump.txt) (opcional);
-3. Execute o comando: ```javac .\AcademiaApp.java```;
-4. Execute o comando (WINDOWS): 
-   ```java -cp ".;lib/mysql-connector-j-9.4.0.jar" AcademiaApp``` // se rodando banco MySQL
-   OU
-   ```java -cp ".;lib/postgresql-42.7.4.jar" AcademiaApp``` // se rodando banco PostgreSQL
-ou
-4. Execute o comando (UBUNTU): 
-   ```java -cp .:lib/mysql-connector-j-9.4.0.jar AcademiaApp``` // se rodando banco MySQL
-   OU
-   ```java -cp .:lib/postgresql-42.7.4.jar AcademiaApp``` // se rodando banco PostgreSQL
+1. Tenha instalado o MongoDB (versão usada: 8.2.2);
+2. Crie uma nova conexão de URL "mongodb://localhost:27017/" e nome "academia_bd";
+3. Crie um novo banco de dados chamado "academia_bd" e de collection name "academia_bd";
+4. Execute o comando: 
+   ```java -cp ".;lib/*" AcademiaApp``` // se os arquivos .class já foram compilados. Senão, referencie o arquivo comandos_uteis.txt
