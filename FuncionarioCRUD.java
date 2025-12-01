@@ -47,7 +47,7 @@ public class FuncionarioCRUD {
     }
 
     private void cadastrar() {
-        // Verifica se existem cargos cadastrados
+        // verifica se existem cargos cadastrados
         if (cargos.countDocuments() == 0) {
             System.out.println("Erro: Não existem cargos cadastrados. Cadastre um cargo primeiro!");
             return;
@@ -60,13 +60,13 @@ public class FuncionarioCRUD {
             return;
         }
 
-        // Valida data de nascimento
+        // valida data de nascimento
         Date dataNascimento = null;
         while (dataNascimento == null) {
             System.out.print("Data de nascimento (dd/MM/yyyy): ");
             try {
                 dataNascimento = parseDate(scanner.nextLine());
-                // Valida se a data de nascimento é razoável (pelo menos 16 anos)
+                // valida se a data de nascimento eh razoavel (pelo menos 16 anos)
                 Date hoje = new Date();
                 long diff = hoje.getTime() - dataNascimento.getTime();
                 long anos = diff / (1000L * 60 * 60 * 24 * 365);
@@ -79,13 +79,13 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Valida data de admissão
+        // valida data de admissao
         Date dataAdmissao = null;
         while (dataAdmissao == null) {
             System.out.print("Data de admissão (dd/MM/yyyy): ");
             try {
                 dataAdmissao = parseDate(scanner.nextLine());
-                // Valida se data de admissão não é futura
+                // valida se data de admissao nao eh futura
                 if (dataAdmissao.after(new Date())) {
                     System.out.println("Erro: Data de admissão não pode ser futura!");
                     dataAdmissao = null;
@@ -95,7 +95,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Data de demissão (opcional)
+        // data de demissao (opcional)
         Date dataDemissao = null;
         System.out.print("Data de demissão (dd/MM/yyyy) [vazio se não houver]: ");
         String dataDemissaoStr = scanner.nextLine();
@@ -111,7 +111,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Valida status
+        // valida status
         int status = -1;
         while (status == -1) {
             System.out.print("Status (1-Ativo, 0-Inativo): ");
@@ -128,7 +128,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Valida telefone
+        // valida telefone
         String telefone = "";
         while (telefone.isEmpty()) {
             System.out.print("Telefone: ");
@@ -139,11 +139,11 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Seleção de cargo com listagem
+        // selecao de cargo com listagem
         String cargoId = selecionarCargo();
         if (cargoId == null) return;
 
-        // Verifica se já existe funcionário com mesmo telefone
+        // verifica se ja existe funcionario com mesmo telefone
         Document funcionarioExistente = collection.find(Filters.eq("telefone", telefone)).first();
         if (funcionarioExistente != null) {
             System.out.println("Erro: Já existe um funcionário cadastrado com este telefone!");
@@ -156,7 +156,7 @@ public class FuncionarioCRUD {
             .append("data_demissao", dataDemissao)
             .append("status", status)
             .append("telefone", telefone)
-            .append("cargo", new ObjectId(cargoId));
+            .append("id_cargo", new ObjectId(cargoId));
 
         collection.insertOne(doc);
         System.out.println("Funcionário cadastrado com sucesso!");
@@ -169,11 +169,11 @@ public class FuncionarioCRUD {
             return;
         }
 
-        // Busca funcionários com informações do cargo
+        // busca funcionarios com informacoes do cargo
         AggregateIterable<Document> result = collection.aggregate(List.of(
             new Document("$lookup", new Document()
                 .append("from", "cargos")
-                .append("localField", "cargo")
+                .append("localField", "id_cargo")
                 .append("foreignField", "_id")
                 .append("as", "cargo_info")),
             new Document("$unwind", "$cargo_info"),
@@ -211,7 +211,7 @@ public class FuncionarioCRUD {
         System.out.print("Novo nome (enter para manter atual): ");
         String nome = scanner.nextLine();
 
-        // Data de nascimento
+        // data de nascimento
         Date dataNascimento = null;
         System.out.print("Nova data de nascimento (dd/MM/yyyy) [enter para manter atual]: ");
         String dataNascStr = scanner.nextLine();
@@ -227,7 +227,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Data de admissão
+        // data de admissao
         Date dataAdmissao = null;
         System.out.print("Nova data de admissão (dd/MM/yyyy) [enter para manter atual]: ");
         String dataAdmStr = scanner.nextLine();
@@ -243,7 +243,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Data de demissão
+        // data de demissao
         Date dataDemissao = null;
         System.out.print("Nova data de demissão (dd/MM/yyyy) [enter para manter atual, 'null' para remover]: ");
         String dataDemStr = scanner.nextLine();
@@ -257,7 +257,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Status
+        // status
         Integer status = null;
         System.out.print("Novo status (1-Ativo, 0-Inativo) [enter para manter atual]: ");
         String statusStr = scanner.nextLine();
@@ -273,7 +273,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Telefone
+        // telefone
         System.out.print("Novo telefone [enter para manter atual]: ");
         String telefone = scanner.nextLine();
         if (!telefone.isEmpty() && !telefone.matches("\\d+")) {
@@ -281,7 +281,7 @@ public class FuncionarioCRUD {
             telefone = "";
         }
 
-        // Cargo
+        // cargo
         String cargoId = null;
         System.out.print("Deseja alterar o cargo? (s/N): ");
         if (scanner.nextLine().equalsIgnoreCase("s")) {
@@ -291,7 +291,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Verifica duplicidade de telefone se for alterado
+        // verifica duplicidade de telefone se for alterado
         if (!telefone.isEmpty()) {
             Document funcionarioExistente = collection.find(
                 Filters.and(
@@ -305,7 +305,7 @@ public class FuncionarioCRUD {
             }
         }
 
-        // Monta updates apenas para campos que foram alterados
+        // monta updates apenas para campos que foram alterados
         List<Document> updates = new ArrayList<>();
         if (!nome.isEmpty()) updates.add(new Document("$set", new Document("nome", nome)));
         if (dataNascimento != null) updates.add(new Document("$set", new Document("data_nascimento", dataNascimento)));
@@ -315,14 +315,14 @@ public class FuncionarioCRUD {
         }
         if (status != null) updates.add(new Document("$set", new Document("status", status)));
         if (!telefone.isEmpty()) updates.add(new Document("$set", new Document("telefone", telefone)));
-        if (cargoId != null) updates.add(new Document("$set", new Document("cargo", new ObjectId(cargoId))));
+        if (cargoId != null) updates.add(new Document("$set", new Document("id_cargo", new ObjectId(cargoId))));
 
         if (updates.isEmpty()) {
             System.out.println("Nenhuma alteração realizada.");
             return;
         }
 
-        // Aplica todos os updates
+        // aplica todos os updates
         for (Document update : updates) {
             collection.updateOne(Filters.eq("_id", new ObjectId(funcionarioId)), update);
         }
@@ -334,7 +334,7 @@ public class FuncionarioCRUD {
         String funcionarioId = selecionarFuncionario("deletar");
         if (funcionarioId == null) return;
 
-        // Busca o funcionário para mostrar informações
+        // busca o funcionário para mostrar informacoes
         Document funcionario = collection.find(Filters.eq("_id", new ObjectId(funcionarioId))).first();
         if (funcionario == null) {
             System.out.println("Funcionário não encontrado!");
@@ -354,13 +354,13 @@ public class FuncionarioCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um funcionário
+     * metodo auxiliar para selecionar um funcionario
      */
     private String selecionarFuncionario(String operacao) {
         System.out.print("Digite o nome ou parte do nome para buscar: ");
         String busca = scanner.nextLine();
 
-        // Busca por nomes que contenham o texto digitado
+        // busca por nomes que contenham o texto digitado
         List<Document> resultados = new ArrayList<>();
         collection.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
                  .into(resultados);
@@ -378,7 +378,7 @@ public class FuncionarioCRUD {
             return funcionario.getObjectId("_id").toHexString();
         }
 
-        // Mostra lista numerada para seleção
+        // mostra lista numerada para selecao
         System.out.println("\n--- FUNCIONÁRIOS ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);
@@ -411,7 +411,7 @@ public class FuncionarioCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um cargo
+     * metodo auxiliar para selecionar um cargo
      */
     private String selecionarCargo() {
         List<Document> listaCargos = new ArrayList<>();
@@ -449,7 +449,7 @@ public class FuncionarioCRUD {
         }
     }
 
-    // Helper de data
+    // helper de data
     private Date parseDate(String dateString) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);

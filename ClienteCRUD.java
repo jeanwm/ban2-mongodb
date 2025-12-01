@@ -32,7 +32,7 @@ public class ClienteCRUD {
     
     public void menu() {
         while (true) {
-            System.out.println("\n=== CLIENTES (MongoDB) ===");
+            System.out.println("\n=== CLIENTES ===");
             System.out.println("1. Cadastrar");
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
@@ -71,7 +71,7 @@ public class ClienteCRUD {
         Date dataAdesao = inputDate("Data de adesão (dd/mm/aaaa): ");
         if (dataAdesao == null) return;
 
-        // Validação de status
+        // validacao de status
         int status = -1;
         while (status != 0 && status != 1) {
             System.out.print("Status (0-Inativo, 1-Ativo): ");
@@ -95,7 +95,7 @@ public class ClienteCRUD {
             return;
         }
 
-        // Verifica se o telefone já existe
+        // verifica se o telefone ja existe
         Document telefoneExistente = telefones.find(Filters.eq("numero", telefone)).first();
         ObjectId idTelefone;
         
@@ -103,7 +103,6 @@ public class ClienteCRUD {
             System.out.println("Aviso: Telefone já cadastrado! Usando telefone existente.");
             idTelefone = telefoneExistente.getObjectId("_id");
         } else {
-            // Inserir novo telefone
             Document docTelefone = new Document("numero", telefone);
             telefones.insertOne(docTelefone);
             idTelefone = docTelefone.getObjectId("_id");
@@ -178,7 +177,7 @@ public class ClienteCRUD {
         System.out.print("Nova data de adesão (dd/mm/aaaa ou Enter para manter): ");
         Date dataAdesao = inputDateOptional(cliente.getDate("data_adesao"));
 
-        // Validação de status
+        // validacao de status
         int status = -1;
         while (status != 0 && status != 1) {
             System.out.print("Novo status (0-Inativo, 1-Ativo, Enter para manter): ");
@@ -202,12 +201,10 @@ public class ClienteCRUD {
         ObjectId idTelefone = cliente.getObjectId("id_telefone");
         
         if (!telefone.isEmpty()) {
-            // Verifica se o novo telefone já existe
             Document telefoneExistente = telefones.find(Filters.eq("numero", telefone)).first();
             if (telefoneExistente != null) {
                 idTelefone = telefoneExistente.getObjectId("_id");
             } else {
-                // Atualiza o telefone existente
                 telefones.updateOne(
                     Filters.eq("_id", idTelefone),
                     Updates.set("numero", telefone)
@@ -238,13 +235,11 @@ public class ClienteCRUD {
 
         ObjectId id = cliente.getObjectId("_id");
 
-        // Confirmação antes de deletar
         System.out.print("Tem certeza que deseja deletar o cliente '" + 
                         cliente.getString("nome") + "'? (s/N): ");
         String confirmacao = scanner.nextLine();
         
         if (confirmacao.equalsIgnoreCase("s")) {
-            // Deleta também o telefone associado
             ObjectId idTelefone = cliente.getObjectId("id_telefone");
             telefones.deleteOne(Filters.eq("_id", idTelefone));
             
@@ -284,10 +279,10 @@ public class ClienteCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um cliente pelo nome
+     * metodo auxiliar para selecionar um cliente pelo nome
      */
     private Document selecionarCliente(String operacao) {
-        System.out.print("Digite o nome ou parte do nome para buscar: ");
+        System.out.print("Digite o nome ou parte do nome do cliente para buscar: ");
         String busca = scanner.nextLine().trim();
 
         if (busca.isEmpty()) {
@@ -295,7 +290,7 @@ public class ClienteCRUD {
             return null;
         }
 
-        // Busca por nomes que contenham o texto digitado (case insensitive)
+        // busca por nomes que contenham o texto digitado (case insensitive)
         List<Document> resultados = new ArrayList<>();
         clientes.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
                  .into(resultados);
@@ -346,7 +341,7 @@ public class ClienteCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um plano
+     * metodo auxiliar para selecionar um plano
      */
     private Document selecionarPlano() {
         long totalPlanos = planos.countDocuments();
@@ -360,11 +355,11 @@ public class ClienteCRUD {
 
         List<Document> resultados;
         if (busca.isEmpty()) {
-            // Se busca vazia, mostra todos os planos
+            // se busca vazia, mostra todos os planos
             resultados = new ArrayList<>();
             planos.find().into(resultados);
         } else {
-            // Busca por nomes que contenham o texto digitado (case insensitive)
+            // busca por nomes que contenham o texto digitado (case insensitive)
             resultados = new ArrayList<>();
             planos.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
                    .into(resultados);
@@ -376,13 +371,13 @@ public class ClienteCRUD {
         }
 
         if (resultados.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             Document plano = resultados.get(0);
             System.out.println("Plano selecionado: " + plano.getString("nome"));
             return plano;
         }
 
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou multiplos, mostra lista para selecao
         System.out.println("\n--- PLANOS ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);
@@ -414,7 +409,7 @@ public class ClienteCRUD {
     }
 
     /**
-     * Obtém o telefone do cliente
+     * obtem o telefone do cliente
      */
     private String getTelefoneCliente(Document cliente) {
         if (cliente.get("id_telefone") == null) {
@@ -426,7 +421,7 @@ public class ClienteCRUD {
         return telefone != null ? telefone.getString("numero") : "Não encontrado";
     }
 
-    // conversão de data para Date (obrigatório)
+    // conversao de data para Date (obrigatorio)
     private Date inputDate(String msg) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
@@ -446,7 +441,7 @@ public class ClienteCRUD {
         }
     }
 
-    // conversão de data para Date (opcional)
+    // conversao de data para Date 
     private Date inputDateOptional(Date valorAtual) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
@@ -454,7 +449,7 @@ public class ClienteCRUD {
         while (true) {
             String str = scanner.nextLine().trim();
             if (str.isEmpty()) {
-                return valorAtual; // Mantém o valor atual
+                return valorAtual; // mantem o valor atual
             }
             try {
                 return sdf.parse(str);

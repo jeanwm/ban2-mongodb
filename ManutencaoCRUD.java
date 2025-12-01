@@ -51,13 +51,13 @@ public class ManutencaoCRUD {
     }
 
     private void cadastrar() {
-        // Verificar se existem equipamentos cadastrados
+        // verifica se existem equipamentos cadastrados
         if (equipamentos.countDocuments() == 0) {
             System.out.println("Erro: Não existem equipamentos cadastrados!");
             return;
         }
 
-        // Verificar se existem funcionários cadastrados
+        // verifica se existem funcionarios cadastrados
         if (funcionarios.countDocuments() == 0) {
             System.out.println("Erro: Não existem funcionários cadastrados!");
             return;
@@ -111,11 +111,11 @@ public class ManutencaoCRUD {
             }
         }
 
-        // Selecionar equipamento
+        // seleciona equipamento
         ObjectId idEquipamento = selecionarEquipamento();
         if (idEquipamento == null) return;
 
-        // Selecionar funcionário
+        // seleciona funcionario
         ObjectId idFuncionario = selecionarFuncionario();
         if (idFuncionario == null) return;
 
@@ -140,7 +140,7 @@ public class ManutencaoCRUD {
 
         System.out.println("\n--- MANUTENÇÕES CADASTRADAS ---");
         
-        // Buscar manutenções com informações dos relacionamentos
+        // busca manutencoes com informacoes dos relacionamentos
         AggregateIterable<Document> results = collection.aggregate(List.of(
             new Document("$lookup", new Document()
                 .append("from", "equipamentos")
@@ -244,7 +244,7 @@ public class ManutencaoCRUD {
             }
         }
 
-        // Atualizar documento
+        // atualiza documento
         collection.updateOne(
             Filters.eq("_id", id),
             Updates.combine(
@@ -262,7 +262,7 @@ public class ManutencaoCRUD {
         Document manutencao = selecionarManutencao("deletar");
         if (manutencao == null) return;
 
-        // Confirmação antes de deletar
+        // confirmacao antes de deletar
         System.out.print("Tem certeza que deseja deletar esta manutenção? (s/N): ");
         String confirmacao = scanner.nextLine();
         
@@ -275,7 +275,7 @@ public class ManutencaoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar uma manutenção
+     * metodo auxiliar para selecionar uma manutencao
      */
     private Document selecionarManutencao(String operacao) {
         long total = collection.countDocuments();
@@ -290,10 +290,8 @@ public class ManutencaoCRUD {
         List<Document> resultados = new ArrayList<>();
         
         if (busca.equalsIgnoreCase("listar") || busca.isBlank()) {
-            // Listar todas as manutenções
             collection.find().into(resultados);
         } else {
-            // Buscar por ID parcial
             collection.find(Filters.regex("_id", busca)).into(resultados);
         }
 
@@ -306,7 +304,7 @@ public class ManutencaoCRUD {
             return resultados.get(0);
         }
 
-        // Mostrar lista numerada para seleção
+        // mostra lista numerada para selecao
         System.out.println("\n--- MANUTENÇÕES ENCONTRADAS ---");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         
@@ -352,7 +350,7 @@ public class ManutencaoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar equipamento
+     * metodo auxiliar para selecionar equipamento
      */
     private ObjectId selecionarEquipamento() {
         List<Document> equipamentosList = new ArrayList<>();
@@ -393,7 +391,7 @@ public class ManutencaoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar funcionário
+     * metodo auxiliar para selecionar funcionario
      */
     private ObjectId selecionarFuncionario() {
         List<Document> funcionariosList = new ArrayList<>();
@@ -433,7 +431,7 @@ public class ManutencaoCRUD {
         }
     }
 
-    // Helpers
+    // helpers
     private LocalDate parseDate(String dateString) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

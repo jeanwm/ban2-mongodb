@@ -142,25 +142,26 @@ public class Relatorios {
         AggregateIterable<Document> result = cargos.aggregate(Arrays.asList(
             new Document("$lookup", new Document()
                 .append("from", "funcionarios")
-                .append("let", new Document("id_cargo", "$_id"))
-                .append("pipeline", Arrays.asList(
-                    new Document("$match", new Document("$expr",
-                        new Document("$and", Arrays.asList(
-                            new Document("$eq", Arrays.asList("$id_cargo", "$$id_cargo")),
-                            new Document("$eq", Arrays.asList("$status", 1))
-                        ))
-                    ))
-                ))
+                .append("localField", "_id")
+                .append("foreignField", "id_cargo")
                 .append("as", "funcionarios")),
             new Document("$project", new Document()
                 .append("cargo", "$nome")
-                .append("quantidade", new Document("$size", "$funcionarios")))
+                .append("quantidade", new Document("$size", "$funcionarios"))
+                .append("funcionarios_ativos", new Document("$filter", new Document()
+                    .append("input", "$funcionarios")
+                    .append("as", "func")
+                    .append("cond", new Document("$eq", Arrays.asList("$$func.status", 1)))
+                ))),
+            new Document("$project", new Document()
+                .append("cargo", "$cargo")
+                .append("quantidade_ativos", new Document("$size", "$funcionarios_ativos")))
         ));
         
         System.out.println("\n--- FUNCIONÁRIOS ATIVOS POR CARGO ---");
         boolean encontrouAtivos = false;
         for (Document doc : result) {
-            int quantidade = doc.getInteger("quantidade");
+            int quantidade = doc.getInteger("quantidade_ativos");
             if (quantidade > 0) {
                 encontrouAtivos = true;
                 System.out.printf("Cargo: %s | Funcionários Ativos: %d\n",

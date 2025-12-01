@@ -45,13 +45,13 @@ public class TelefoneCRUD {
         System.out.print("Número: ");
         String numero = scanner.nextLine();
 
-        // Validação básica do número
+        // validacao basica do numero
         if (!numero.matches("\\d+")) {
             System.out.println("Erro: O número deve conter apenas dígitos!");
             return;
         }
 
-        // Verifica se o número já existe
+        // verifica se o numero ja existe
         Document telefoneExistente = telefones.find(Filters.eq("numero", numero)).first();
         if (telefoneExistente != null) {
             System.out.println("Erro: Este número já está cadastrado!");
@@ -89,13 +89,13 @@ public class TelefoneCRUD {
         System.out.print("Novo número: ");
         String novoNumero = scanner.nextLine();
 
-        // Validação do novo número
+        // validacao do novo numero
         if (!novoNumero.matches("\\d+")) {
             System.out.println("Erro: O número deve conter apenas dígitos!");
             return;
         }
 
-        // Verifica se o novo número já existe (exceto para o próprio telefone)
+        // verifica se o novo numero ja existe (exceto para o proprio telefone)
         Document telefoneExistente = telefones.find(
             Filters.and(
                 Filters.eq("numero", novoNumero),
@@ -120,7 +120,7 @@ public class TelefoneCRUD {
         String numero = selecionarTelefone("deletar");
         if (numero == null) return;
 
-        // Confirmação antes de deletar
+        // confirmacao antes de deletar
         System.out.print("Tem certeza que deseja deletar o telefone " + numero + "? (s/n): ");
         String confirmacao = scanner.nextLine();
         
@@ -133,15 +133,15 @@ public class TelefoneCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um telefone pelo número
-     * @param operacao Tipo de operação (atualizar, deletar)
-     * @return Número do telefone selecionado ou null se cancelado
+     * metodo auxiliar para selecionar um telefone pelo numero
+     * @param operacao tipo de operacao (atualizar, deletar)
+     * @return numero do telefone selecionado ou null se cancelado
      */
     private String selecionarTelefone(String operacao) {
         System.out.print("Digite o número ou parte do número para buscar: ");
         String busca = scanner.nextLine();
 
-        // Busca por números que contenham o texto digitado
+        // busca por numeros que contenham o texto digitado
         List<Document> resultados = new ArrayList<>();
         telefones.find(Filters.regex("numero", ".*" + busca + ".*"))
                  .into(resultados);
@@ -152,13 +152,13 @@ public class TelefoneCRUD {
         }
 
         if (resultados.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             String numero = resultados.get(0).getString("numero");
             System.out.println("Telefone selecionado: " + numero);
             return numero;
         }
 
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou mltiplos, mostra lista para selecao
         System.out.println("\n--- TELEFONES ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);

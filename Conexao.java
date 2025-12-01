@@ -14,7 +14,7 @@ public class Conexao {
             Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
             mongoLogger.setLevel(Level.SEVERE);
 
-            // String de conexão - ajuste conforme necessário
+            // string de conexao - ajuste se necessario
             String connectionString = "mongodb://localhost:27017";
             String databaseName = "academia_bd";
             

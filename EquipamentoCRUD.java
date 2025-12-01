@@ -52,7 +52,7 @@ public class EquipamentoCRUD {
             return;
         }
 
-        // Verifica se já existe equipamento com mesmo modelo
+        // verifica se ja existe equipamento com mesmo modelo
         Document equipamentoExistente = collection.find(Filters.eq("modelo", modelo)).first();
         if (equipamentoExistente != null) {
             System.out.println("Erro: Já existe um equipamento com este modelo!");
@@ -130,7 +130,7 @@ public class EquipamentoCRUD {
             return;
         }
 
-        // Verifica se o novo modelo já existe em outro equipamento
+        // verifica se o novo modelo ja existe em outro equipamento
         if (!novoModelo.equals(modeloAtual)) {
             Document equipamentoExistente = collection.find(
                 Filters.and(
@@ -195,12 +195,11 @@ public class EquipamentoCRUD {
         String modelo = equipamento.getString("modelo");
         ObjectId id = equipamento.getObjectId("_id");
 
-        // Confirmação antes de deletar
         System.out.print("Tem certeza que deseja deletar o equipamento '" + modelo + "'? (s/N): ");
         String confirmacao = scanner.nextLine();
         
         if (confirmacao.equalsIgnoreCase("s")) {
-            // Verificar se o equipamento está vinculado a manutenções
+            // verifica se o equipamento esta vinculado a manutencoes
             MongoCollection<Document> manutencoes = database.getCollection("manutencoes");
             Document manutencaoVinculada = manutencoes.find(Filters.eq("id_equipamento", id)).first();
             
@@ -222,8 +221,8 @@ public class EquipamentoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um equipamento pelo modelo
-     * @param operacao Tipo de operação (atualizar, deletar)
+     * metodo auxiliar para selecionar um equipamento pelo modelo
+     * @param operacao tipo de operacao (atualizar, deletar)
      * @return Document do equipamento selecionado ou null se cancelado
      */
     private Document selecionarEquipamento(String operacao) {
@@ -231,7 +230,7 @@ public class EquipamentoCRUD {
         String busca = scanner.nextLine().trim();
 
         if (busca.isEmpty()) {
-            // Se busca vazia, lista todos os equipamentos
+            // se busca vazia, lista todos os equipamentos
             List<Document> todosEquipamentos = new ArrayList<>();
             collection.find().into(todosEquipamentos);
             
@@ -243,7 +242,7 @@ public class EquipamentoCRUD {
             return selecionarDaLista(todosEquipamentos, operacao);
         }
 
-        // Busca por modelos que contenham o texto digitado (case insensitive)
+        // busca por modelos que contenham o texto digitado (case insensitive)
         List<Document> resultados = new ArrayList<>();
         collection.find(Filters.regex("modelo", ".*" + busca + ".*", "i"))
                  .into(resultados);
@@ -257,14 +256,14 @@ public class EquipamentoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um equipamento de uma lista
-     * @param equipamentos Lista de equipamentos encontrados
-     * @param operacao Tipo de operação
+     * metodo auxiliar para selecionar um equipamento de uma lista
+     * @param equipamentos lista de equipamentos encontrados
+     * @param operacao tipo de operacao
      * @return Document do equipamento selecionado ou null se cancelado
      */
     private Document selecionarDaLista(List<Document> equipamentos, String operacao) {
         if (equipamentos.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             Document equipamento = equipamentos.get(0);
             String statusStr = equipamento.getInteger("status") == 1 ? "Ativo" : "Inativo";
             System.out.println("Equipamento selecionado: " + equipamento.getString("modelo") + 
@@ -273,7 +272,7 @@ public class EquipamentoCRUD {
             return equipamento;
         }
 
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou multiplos, mostra lista para selecao
         System.out.println("\n--- EQUIPAMENTOS ENCONTRADOS ---");
         for (int i = 0; i < equipamentos.size(); i++) {
             Document doc = equipamentos.get(i);

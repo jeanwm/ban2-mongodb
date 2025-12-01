@@ -21,7 +21,7 @@ public class CargoCRUD {
     
     public void menu() {
         while (true) {
-            System.out.println("\n=== CARGOS (MongoDB) ===");
+            System.out.println("\n=== CARGOS ===");
             System.out.println("1. Cadastrar");
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
@@ -47,13 +47,13 @@ public class CargoCRUD {
         System.out.print("Nome: ");
         String nome = scanner.nextLine().trim();
         
-        // Validação do nome
+        // validacao do nome
         if (nome.isEmpty()) {
             System.out.println("Erro: O nome não pode estar vazio!");
             return;
         }
         
-        // Verifica se já existe cargo com mesmo nome
+        // verifica se ja existe cargo com mesmo nome
         Document cargoExistente = collection.find(Filters.eq("nome", nome)).first();
         if (cargoExistente != null) {
             System.out.println("Erro: Já existe um cargo com este nome!");
@@ -69,9 +69,9 @@ public class CargoCRUD {
         }
         
         System.out.print("Salário: ");
-        float salario;
+        double salario;
         try {
-            salario = scanner.nextFloat();
+            salario = scanner.nextDouble();
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Erro: Valor de salário inválido!");
@@ -79,7 +79,7 @@ public class CargoCRUD {
             return;
         }
         
-        // Validação do salário
+        // validacao do salario
         if (salario <= 0) {
             System.out.println("Erro: O salário deve ser maior que zero!");
             return;
@@ -110,7 +110,7 @@ public class CargoCRUD {
                 ObjectId id = doc.getObjectId("_id");
                 String nome = doc.getString("nome");
                 String descricao = doc.getString("descricao");
-                float salario = doc.get("salario", 0.0f);
+                double salario = doc.getDouble("salario"); // Usar getDouble em vez de get
                 
                 System.out.printf("ID: %s | Nome: %s | Descrição: %s | Salário: R$ %.2f\n",
                     id.toString(), nome, descricao, salario);
@@ -136,7 +136,7 @@ public class CargoCRUD {
             return;
         }
         
-        // Verifica se o novo nome já existe (exceto para o próprio cargo)
+        // verifica se o novo nome ja existe (exceto para o proprio cargo)
         if (!novoNome.equals(nomeAtual)) {
             Document cargoExistente = collection.find(
                 Filters.and(
@@ -159,10 +159,10 @@ public class CargoCRUD {
             return;
         }
         
-        System.out.print("Novo salário (atual: R$ " + cargo.get("salario") + "): ");
-        float novoSalario;
+        System.out.print("Novo salário (atual: R$ " + cargo.getDouble("salario") + "): ");
+        double novoSalario;
         try {
-            novoSalario = scanner.nextFloat();
+            novoSalario = scanner.nextDouble();
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Erro: Valor de salário inválido!");
@@ -197,7 +197,7 @@ public class CargoCRUD {
         ObjectId id = cargo.getObjectId("_id");
         String nome = cargo.getString("nome");
         
-        // Confirmação antes de deletar
+        // confirmacao antes de deletar
         System.out.print("Tem certeza que deseja deletar o cargo '" + nome + "'? (s/N): ");
         String confirmacao = scanner.nextLine();
         
@@ -215,8 +215,8 @@ public class CargoCRUD {
     }
     
     /**
-     * Método auxiliar para selecionar um cargo pelo nome
-     * @param operacao Tipo de operação (atualizar, deletar)
+     * metodo auxiliar para selecionar um cargo pelo nome
+     * @param operacao tipo de operacao (atualizar, deletar)
      * @return Document do cargo selecionado ou null se cancelado
      */
     private Document selecionarCargo(String operacao) {
@@ -228,7 +228,7 @@ public class CargoCRUD {
             return null;
         }
         
-        // Busca por cargos que contenham o texto digitado (case insensitive)
+        // busca por cargos que contenham o texto digitado (case insensitive)
         List<Document> resultados = new ArrayList<>();
         collection.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
                  .into(resultados);
@@ -239,13 +239,13 @@ public class CargoCRUD {
         }
         
         if (resultados.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             Document cargo = resultados.get(0);
             System.out.println("Cargo selecionado: " + cargo.getString("nome"));
             return cargo;
         }
         
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou multiplos, mostra lista para selecao
         System.out.println("\n--- CARGOS ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);
@@ -253,7 +253,7 @@ public class CargoCRUD {
                 i + 1, 
                 doc.getString("nome"),
                 doc.getString("descricao"),
-                doc.get("salario", 0.0f));
+                doc.getDouble("salario"));
         }
         
         System.out.print("Selecione o número do cargo para " + operacao + " (1-" + resultados.size() + "): ");

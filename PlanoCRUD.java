@@ -48,7 +48,7 @@ public class PlanoCRUD {
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
         
-        // Verifica se já existe plano com mesmo nome
+        // verifica se ja existe plano com mesmo nome
         Document planoExistente = planos.find(Filters.eq("nome", nome)).first();
         if (planoExistente != null) {
             System.out.println("Erro: Já existe um plano com este nome!");
@@ -107,7 +107,7 @@ public class PlanoCRUD {
                 .append("valor", valor)
                 .append("duracao", duracao)
                 .append("fidelidade", fidelidade)
-                .append("beneficios", new ArrayList<Integer>());
+                .append("beneficios", new ArrayList<String>()); // Agora armazena nomes dos benefícios
 
         planos.insertOne(doc);
         System.out.println("Plano cadastrado com sucesso!");
@@ -122,9 +122,9 @@ public class PlanoCRUD {
 
         System.out.println("\n--- PLANOS CADASTRADOS ---");
         for (Document doc : planos.find()) {
-            List<Integer> beneficiosList = doc.getList("beneficios", Integer.class);
+            List<String> beneficiosList = doc.getList("beneficios", String.class);
             String beneficiosStr = beneficiosList != null && !beneficiosList.isEmpty() 
-                ? beneficiosList.toString() 
+                ? String.join(", ", beneficiosList)
                 : "Nenhum benefício vinculado";
                 
             System.out.printf(
@@ -152,11 +152,11 @@ public class PlanoCRUD {
         if (novoNome.isEmpty()) {
             novoNome = nomeAtual;
         } else {
-            // Verifica se o novo nome já existe (exceto para o próprio plano)
+            // verifica se o novo nome ja existe (exceto para o proprio plano)
             Document planoExistente = planos.find(
                 Filters.and(
                     Filters.eq("nome", novoNome),
-                    Filters.ne("nome", nomeAtual)
+                    Filters.ne("_id", plano.getObjectId("_id"))
                 )
             ).first();
             
@@ -227,7 +227,7 @@ public class PlanoCRUD {
         }
 
         planos.updateOne(
-            Filters.eq("_id", new ObjectId(id)),
+            Filters.eq("_id", plano.getObjectId("_id")),
             Updates.combine(
                 Updates.set("nome", novoNome),
                 Updates.set("descricao", novaDescricao),
@@ -246,7 +246,6 @@ public class PlanoCRUD {
 
         String nomePlano = plano.getString("nome");
         
-        // Confirmação antes de deletar
         System.out.print("Tem certeza que deseja deletar o plano \"" + nomePlano + "\"? (s/N): ");
         String confirmacao = scanner.nextLine();
         
@@ -259,7 +258,7 @@ public class PlanoCRUD {
     }
 
     private void vincular() {
-        // Verifica se existem benefícios
+        // verifica se existem beneficios
         if (beneficios.countDocuments() == 0) {
             System.out.println("Nenhum benefício cadastrado no sistema.");
             return;
@@ -271,25 +270,25 @@ public class PlanoCRUD {
         Document beneficio = selecionarBeneficio();
         if (beneficio == null) return;
 
-        int idBeneficio = beneficio.getInteger("id_beneficio");
-        List<Integer> beneficiosAtuais = plano.getList("beneficios", Integer.class);
+        String nomeBeneficio = beneficio.getString("nome");
+        List<String> beneficiosAtuais = plano.getList("beneficios", String.class);
 
-        // Verifica se o benefício já está vinculado
-        if (beneficiosAtuais != null && beneficiosAtuais.contains(idBeneficio)) {
+        // verifica se o beneficio ja esta vinculado
+        if (beneficiosAtuais != null && beneficiosAtuais.contains(nomeBeneficio)) {
             System.out.println("Este benefício já está vinculado ao plano!");
             return;
         }
 
         planos.updateOne(
             Filters.eq("_id", plano.getObjectId("_id")),
-            Updates.push("beneficios", idBeneficio)
+            Updates.push("beneficios", nomeBeneficio)
         );
 
-        System.out.println("Benefício vinculado com sucesso ao plano!");
+        System.out.println("Benefício '" + nomeBeneficio + "' vinculado com sucesso ao plano '" + plano.getString("nome") + "'!");
     }
 
     /**
-     * Método auxiliar para selecionar um plano pelo nome
+     * metodo auxiliar para selecionar um plano pelo nome
      */
     private Document selecionarPlano(String operacao) {
         if (planos.countDocuments() == 0) {
@@ -298,9 +297,14 @@ public class PlanoCRUD {
         }
 
         System.out.print("Digite o nome ou parte do nome do plano para buscar: ");
-        String busca = scanner.nextLine();
+        String busca = scanner.nextLine().trim();
 
-        // Busca por planos que contenham o texto digitado no nome
+        if (busca.isEmpty()) {
+            System.out.println("Busca não pode estar vazia!");
+            return null;
+        }
+
+        // busca por planos que contenham o texto digitado no nome
         List<Document> resultados = new ArrayList<>();
         planos.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
               .into(resultados);
@@ -311,13 +315,13 @@ public class PlanoCRUD {
         }
 
         if (resultados.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             Document plano = resultados.get(0);
             System.out.println("Plano selecionado: " + plano.getString("nome"));
             return plano;
         }
 
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou multiplos, mostra lista para seleção
         System.out.println("\n--- PLANOS ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);
@@ -350,36 +354,65 @@ public class PlanoCRUD {
     }
 
     /**
-     * Método auxiliar para selecionar um benefício
+     * metodo auxiliar para selecionar um beneficio pelo nome
      */
     private Document selecionarBeneficio() {
-        System.out.println("\n--- BENEFÍCIOS DISPONÍVEIS ---");
-        List<Document> listaBeneficios = new ArrayList<>();
-        for (Document b : beneficios.find()) {
-            listaBeneficios.add(b);
-            System.out.printf("ID: %d | Nome: %s | Descrição: %s\n",
-                b.getInteger("id_beneficio"),
-                b.getString("nome"),
-                b.getString("descricao"));
+        if (beneficios.countDocuments() == 0) {
+            System.out.println("Nenhum benefício cadastrado.");
+            return null;
         }
 
-        System.out.print("Digite o ID do benefício: ");
+        System.out.print("Digite o nome ou parte do nome do benefício para buscar: ");
+        String busca = scanner.nextLine().trim();
+
+        if (busca.isEmpty()) {
+            System.out.println("Busca não pode estar vazia!");
+            return null;
+        }
+
+        // busca por beneficios que contenham o texto digitado no nome
+        List<Document> resultados = new ArrayList<>();
+        beneficios.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
+                  .into(resultados);
+
+        if (resultados.isEmpty()) {
+            System.out.println("Nenhum benefício encontrado com: \"" + busca + "\"");
+            return null;
+        }
+
+        if (resultados.size() == 1) {
+            // se encontrou apenas um, usa automaticamente
+            Document beneficio = resultados.get(0);
+            System.out.println("Benefício selecionado: " + beneficio.getString("nome"));
+            return beneficio;
+        }
+
+        // se encontrou multiplos, mostra lista para seleção
+        System.out.println("\n--- BENEFÍCIOS ENCONTRADOS ---");
+        for (int i = 0; i < resultados.size(); i++) {
+            Document doc = resultados.get(i);
+            System.out.printf("%d. Nome: %s | Descrição: %s\n",
+                i + 1,
+                doc.getString("nome"),
+                doc.getString("descricao"));
+        }
+
+        System.out.print("Selecione o benefício (1-" + resultados.size() + "): ");
         try {
-            int idBeneficio = scanner.nextInt();
+            int escolha = scanner.nextInt();
             scanner.nextLine();
             
-            // Busca o benefício pelo ID
-            Document beneficio = beneficios.find(Filters.eq("id_beneficio", idBeneficio)).first();
-            if (beneficio == null) {
-                System.out.println("Benefício não encontrado com ID: " + idBeneficio);
+            if (escolha < 1 || escolha > resultados.size()) {
+                System.out.println("Seleção inválida!");
                 return null;
             }
             
-            System.out.println("Benefício selecionado: " + beneficio.getString("nome"));
-            return beneficio;
+            Document beneficioSelecionado = resultados.get(escolha - 1);
+            System.out.println("Benefício selecionado: " + beneficioSelecionado.getString("nome"));
+            return beneficioSelecionado;
             
         } catch (Exception e) {
-            System.out.println("ID inválido!");
+            System.out.println("Entrada inválida!");
             scanner.nextLine();
             return null;
         }

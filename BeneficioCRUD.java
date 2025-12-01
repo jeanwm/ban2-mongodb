@@ -21,7 +21,7 @@ public class BeneficioCRUD {
     
     public void menu() {
         while (true) {
-            System.out.println("\n=== BENEFÍCIOS (MongoDB) ===");
+            System.out.println("\n=== BENEFÍCIOS ===");
             System.out.println("1. Cadastrar");
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
@@ -47,13 +47,13 @@ public class BeneficioCRUD {
         System.out.print("Nome: ");
         String nome = scanner.nextLine().trim();
         
-        // Validação do nome
+        // validacao do nome
         if (nome.isEmpty()) {
             System.out.println("Erro: O nome não pode estar vazio!");
             return;
         }
         
-        // Verifica se já existe um benefício com o mesmo nome
+        // verifica se ja existe um beneficio com o mesmo nome
         Document beneficioExistente = collection.find(Filters.eq("nome", nome)).first();
         if (beneficioExistente != null) {
             System.out.println("Erro: Já existe um benefício com este nome!");
@@ -63,7 +63,7 @@ public class BeneficioCRUD {
         System.out.print("Descrição: ");
         String descricao = scanner.nextLine().trim();
         
-        // Validação da descrição
+        // validacao da descricao
         if (descricao.isEmpty()) {
             System.out.println("Erro: A descrição não pode estar vazia!");
             return;
@@ -112,13 +112,13 @@ public class BeneficioCRUD {
         System.out.print("Novo nome (atual: " + nomeAtual + "): ");
         String novoNome = scanner.nextLine().trim();
         
-        // Validação do novo nome
+        // validacao do novo nome
         if (novoNome.isEmpty()) {
             System.out.println("Erro: O nome não pode estar vazio!");
             return;
         }
         
-        // Verifica se o novo nome já existe (exceto para o próprio benefício)
+        // verifica se o novo nome ja existe (exceto para o proprio beneficio)
         if (!novoNome.equals(nomeAtual)) {
             Document beneficioExistente = collection.find(
                 Filters.and(
@@ -136,7 +136,7 @@ public class BeneficioCRUD {
         System.out.print("Nova descrição (atual: " + beneficio.getString("descricao") + "): ");
         String novaDescricao = scanner.nextLine().trim();
         
-        // Validação da nova descrição
+        // validacao da nova descricao
         if (novaDescricao.isEmpty()) {
             System.out.println("Erro: A descrição não pode estar vazia!");
             return;
@@ -162,7 +162,7 @@ public class BeneficioCRUD {
         ObjectId id = beneficio.getObjectId("_id");
         String nome = beneficio.getString("nome");
         
-        // Confirmação antes de deletar
+        // confirmacao antes de deletar
         System.out.print("Tem certeza que deseja deletar o benefício '" + nome + "'? (s/N): ");
         String confirmacao = scanner.nextLine();
         
@@ -180,9 +180,9 @@ public class BeneficioCRUD {
     }
     
     /**
-     * Método auxiliar para selecionar um benefício por nome
-     * @param operacao Tipo de operação (atualizar, deletar)
-     * @return Document do benefício selecionado ou null se cancelado
+     * metodo auxiliar para selecionar um beneficio por nome
+     * @param operacao tipo de operacao (atualizar, deletar)
+     * @return Document do beneficio selecionado ou null se cancelado
      */
     private Document selecionarBeneficio(String operacao) {
         long total = collection.countDocuments();
@@ -191,7 +191,7 @@ public class BeneficioCRUD {
             return null;
         }
         
-        // Se há poucos benefícios, mostra lista completa
+        // se ha poucos beneficios, mostra lista completa
         if (total <= 10) {
             System.out.println("\n--- LISTA DE BENEFÍCIOS ---");
             List<Document> todosBeneficios = new ArrayList<>();
@@ -226,16 +226,16 @@ public class BeneficioCRUD {
             }
         }
         
-        // Para muitos benefícios, usa busca por nome
+        // para muitos beneficios, usa busca por nome
         System.out.print("Digite o nome ou parte do nome para buscar: ");
         String busca = scanner.nextLine().trim();
         
         if (busca.isEmpty()) {
             System.out.println("Busca vazia! Mostrando todos os benefícios:");
-            return selecionarBeneficio(operacao); // Recursão para mostrar lista completa
+            return selecionarBeneficio(operacao); // recursao para mostrar lista completa
         }
         
-        // Busca por benefícios que contenham o texto no nome
+        // busca por beneficios que contenham o texto no nome
         List<Document> resultados = new ArrayList<>();
         collection.find(Filters.regex("nome", ".*" + busca + ".*", "i"))
                  .into(resultados);
@@ -246,13 +246,13 @@ public class BeneficioCRUD {
         }
         
         if (resultados.size() == 1) {
-            // Se encontrou apenas um, usa automaticamente
+            // se encontrou apenas um, usa automaticamente
             Document beneficio = resultados.get(0);
             System.out.println("Benefício selecionado: " + beneficio.getString("nome"));
             return beneficio;
         }
         
-        // Se encontrou múltiplos, mostra lista para seleção
+        // se encontrou multiplos, mostra lista para selecao
         System.out.println("\n--- BENEFÍCIOS ENCONTRADOS ---");
         for (int i = 0; i < resultados.size(); i++) {
             Document doc = resultados.get(i);
