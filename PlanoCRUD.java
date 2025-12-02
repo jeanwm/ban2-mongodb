@@ -285,21 +285,21 @@ public class PlanoCRUD {
         Document beneficio = selecionarBeneficio();
         if (beneficio == null) return;
 
-        String nomeBeneficio = beneficio.getString("nome");
-        List<String> beneficiosAtuais = plano.getList("beneficios", String.class);
+        ObjectId beneficioId = beneficio.getObjectId("_id");
+        List<ObjectId> beneficiosAtuais = plano.getList("beneficios", ObjectId.class);
 
         // verifica se o beneficio ja esta vinculado
-        if (beneficiosAtuais != null && beneficiosAtuais.contains(nomeBeneficio)) {
+        if (beneficiosAtuais != null && beneficiosAtuais.contains(beneficioId)) {
             System.out.println("Este benefício já está vinculado ao plano!");
             return;
         }
 
         planos.updateOne(
             Filters.eq("_id", plano.getObjectId("_id")),
-            Updates.push("beneficios", beneficio.getObjectId("_id"))
+            Updates.push("beneficios", beneficioId)
         );
 
-        System.out.println("Benefício '" + nomeBeneficio + "' vinculado com sucesso ao plano '" + plano.getString("nome") + "'!");
+        System.out.println("Benefício '" + beneficio.getString("nome") + "' vinculado com sucesso ao plano '" + plano.getString("nome") + "'!");
     }
 
     /**
