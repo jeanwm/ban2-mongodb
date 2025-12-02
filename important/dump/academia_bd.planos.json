@@ -1,0 +1,18 @@
+[{
+  "_id": {
+    "$oid": "692e44fe912b5a39df1bebb8"
+  },
+  "nome": "Plano 1",
+  "descricao": "Plano",
+  "valor": 100,
+  "duracao": 12,
+  "fidelidade": 0,
+  "beneficios": [
+    {
+      "$oid": "692e44d3912b5a39df1bebb6"
+    },
+    {
+      "$oid": "692e44db912b5a39df1bebb7"
+    }
+  ]
+}]

@@ -1,0 +1,17 @@
+[{
+  "_id": {
+    "$oid": "692e53c6903b451d528eea6e"
+  },
+  "custo": 400,
+  "status": 0,
+  "data_prevista": {
+    "$date": "2025-12-02T03:00:00.000Z"
+  },
+  "data_realizada": null,
+  "id_equipamento": {
+    "$oid": "692e53a6903b451d528eea6d"
+  },
+  "id_funcionario": {
+    "$oid": "692e459e912b5a39df1bebbc"
+  }
+}]

@@ -1,0 +1,18 @@
+[{
+  "_id": {
+    "$oid": "692e459e912b5a39df1bebbc"
+  },
+  "nome": "Funcionario 1",
+  "data_nascimento": {
+    "$date": "2002-02-02T02:00:00.000Z"
+  },
+  "data_admissao": {
+    "$date": "2025-10-15T03:00:00.000Z"
+  },
+  "data_demissao": null,
+  "status": 1,
+  "telefone": "47888888888",
+  "id_cargo": {
+    "$oid": "692e457b912b5a39df1bebbb"
+  }
+}]
