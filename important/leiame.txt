@@ -8,6 +8,4 @@ PARA RODAR:
    ```java -cp ".;lib/*" AcademiaApp``` // se os arquivos .class já foram compilados. Senão, referencie o arquivo comandos_uteis.txt
 
 Link do vídeo do funcionamento do sistema no YouTube:
-https://youtu.be/IJKB7BXAOfg
-
-Aviso acerca do vídeo: no momento em que gravamos, não havíamos aplicado uma correção na listagem dos planos (na coluna dos benefícios relacionados), o que fazia com os nomes dos benefícios não fossem mostrados corretamente após serem editados. Isso já foi corrigido, mas como não impacta gravemente no vídeo, não o atualizamos, mas o sistema já funciona corretamente.
+https://www.youtube.com/watch?v=ObIJVPuzK1k
